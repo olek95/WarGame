@@ -9,5 +9,6 @@ public class Soldier extends MilitaryUnit{
         this.attack = 5;
         this.life = 10;
         this.speed = 5;
+        this.type = MilitaryUnitType.SOLDIER;
     }
 }
