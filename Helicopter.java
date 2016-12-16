@@ -9,5 +9,6 @@ public class Helicopter extends MilitaryUnit{
         this.attack = 10;
         this.life = 20;
         this.speed = 15;
+        this.type = MilitaryUnitType.HELICOPTER;
     }
 }
