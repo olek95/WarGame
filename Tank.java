@@ -9,5 +9,6 @@ public class Tank extends MilitaryUnit{
         this.attack = 15;
         this.life = 30;
         this.speed = 10;
+        this.type = MilitaryUnitType.TANK;
     }
 }
