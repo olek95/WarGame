@@ -5,10 +5,11 @@ import javafx.scene.image.ImageView;
 
 public class Helicopter extends MilitaryUnit{
     public Helicopter(){
-        this.img = new ImageView(new Image("file:images/helicopter.png"));
-        this.attack = 10;
-        this.life = 20;
-        this.speed = 15;
-        this.type = MilitaryUnitType.HELICOPTER;
+        img = new ImageView(new Image("file:images/helicopter.png"));
+        attack = 10;
+        life = initialLife = 20;
+        speed = 15;
+        price = 10;
+        type = MilitaryUnitType.HELICOPTER;
     }
 }
