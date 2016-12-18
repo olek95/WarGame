@@ -17,6 +17,7 @@ public class Enemy extends Task{
     protected Void call(){
         Random rand = new Random();
         for(int i = 0; i < 10; i++){
+            if(WarGameFXMLController.getController().getBattlefieldPane() == null) cancel();
             Platform.runLater(() -> {
                 MilitaryUnit u = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.SOLDIER);
                 WarGameFXMLController.getController().getBattlefieldPane().getChildren().add(u.getImg());
@@ -31,7 +32,7 @@ public class Enemy extends Task{
                 Logger.getLogger(WarGameFXMLController.class.getName()).log(Level.SEVERE, null, e);
             }
         }
-         return null;
+        return null;
     }
     public static MilitaryUnit getUnit(ImageView img){
         for(MilitaryUnit unit : units)
@@ -45,12 +46,24 @@ public class Enemy extends Task{
         return units.size();
     }
     public static MilitaryUnit getBase(){
-        System.out.println("WSZEDLEM" + units.size());
         return units.get(0);
+    }
+    public static ArrayList<MilitaryUnit> getUnits(){
+        return units;
     }
     private static int randPosition(){
         Random rand = new Random();
         int[] positions = {0, 97, 194, 291};
         return positions[rand.nextInt(4)];
+    }
+    public static void destroyAll(){
+        int i = 0;
+        do{
+            MilitaryUnit unit = units.get(i);
+            unit.img.setImage(null);
+        unit.img = null;
+        unit = null;
+        i++;
+        }while(i < 0);
     }
 }
