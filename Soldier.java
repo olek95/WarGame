@@ -5,10 +5,11 @@ import javafx.scene.image.ImageView;
 
 public class Soldier extends MilitaryUnit{
     public Soldier(){
-        this.img = new ImageView(new Image("file:images/soldier.png"));
-        this.attack = 5;
-        this.life = 10;
-        this.speed = 5;
-        this.type = MilitaryUnitType.SOLDIER;
+        img = new ImageView(new Image("file:images/soldier.png"));
+        attack = 5;
+        life = initialLife = 10;
+        speed = 5;
+        price = 5;
+        type = MilitaryUnitType.SOLDIER;
     }
 }
