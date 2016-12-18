@@ -1,22 +1,13 @@
 package wargame;
 
-import java.awt.event.MouseAdapter;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.PickResult;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 
 public class WarGameFXMLController implements Initializable {
@@ -24,6 +15,8 @@ public class WarGameFXMLController implements Initializable {
     private static WarGameFXMLController controller;
     private MilitaryUnit unit;
     private Player p;
+    private Enemy e;
+    private GameManager manager;
     @FXML
     private Button buySoldierButton, exitButton;
     @FXML
@@ -31,38 +24,51 @@ public class WarGameFXMLController implements Initializable {
     @FXML
     private TextArea battleTextArea;
     @FXML
-    private void buySoldier(ActionEvent event) throws InterruptedException {
-        unit = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.SOLDIER);
+    private TextField cashTextField, pointsTextField;
+    @FXML
+    private void play(ActionEvent event){
+        buySoldierButton.setOnAction(value -> {
+            unit = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.SOLDIER);
+            if(!manager.changeCash(unit.price)) unit = null;
+        });
+        battlefieldPane.setOnMouseClicked(click -> {
+            if(unit != null){
+                battlefieldPane.getChildren().add(unit.getImg());
+                p.addUnit(unit);
+                unit.getImg().setLayoutY(getLocationY(click.getY()));
+                new Thread(unit).start();
+                unit = null;
+            }
+        });
+        //new Thread(e).start();
     }
-    
     @Override
     @FXML
     public void initialize(URL url, ResourceBundle rb) {
         controller = this;
+        manager = new GameManager();
+        manager.setInitialValues();
         p = new Player();
+        e = new Enemy();
         BATTLEFIELD_WIDTH = battlefieldPane.getPrefWidth();
         MARGIN = 165;
-       MilitaryUnit u = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.SOLDIER);
+       /*MilitaryUnit u = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.SOLDIER);
+       battlefieldPane.getChildren().add(u.getImg());
+       e.addUnit(u);
         u.getImg().setLayoutX(BATTLEFIELD_WIDTH - u.getImg().getImage().getWidth());
         u.getImg().setLayoutY(0);
-        battlefieldPane.getChildren().add(u.getImg());
         new Thread(u).start();
-        //try {
-        //    Thread.sleep(1000);
-        //} catch (InterruptedException ex) {
-        //    Logger.getLogger(WarGameFXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        //}
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(WarGameFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
           MilitaryUnit u2 = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.SOLDIER);
         u2.getImg().setLayoutX(BATTLEFIELD_WIDTH - u2.getImg().getImage().getWidth());
         u2.getImg().setLayoutY(97);
          battlefieldPane.getChildren().add(u2.getImg());
-         new Thread(u2).start();
-        battlefieldPane.setOnMouseClicked(event -> {
-            battlefieldPane.getChildren().add(unit.getImg());
-            p.addUnit(unit);
-            unit.getImg().setLayoutY(getLocationY(event.getY()));
-            new Thread(unit).start();
-        });
+         e.addUnit(u2);
+         new Thread(u2).start();*/
         exitButton.setOnAction(value -> {
             System.exit(0);
         });
@@ -88,4 +94,11 @@ public class WarGameFXMLController implements Initializable {
     public TextArea getBattleTextArea(){
         return battleTextArea;
     }
+    public TextField getCashTextField(){
+        return cashTextField;
+    }
+    public TextField getPointsTextField(){
+        return pointsTextField;
+    }
 }
+
