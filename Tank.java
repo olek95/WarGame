@@ -5,10 +5,11 @@ import javafx.scene.image.ImageView;
 
 public class Tank extends MilitaryUnit{
     public Tank(){
-        this.img = new ImageView(new Image("file:images/tank.png"));
-        this.attack = 15;
-        this.life = 30;
-        this.speed = 10;
-        this.type = MilitaryUnitType.TANK;
+        img = new ImageView(new Image("file:images/tank.png"));
+        attack = 15;
+        life = initialLife = 30;
+        speed = 10;
+        price = 15;
+        type = MilitaryUnitType.TANK;
     }
 }
