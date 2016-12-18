@@ -7,6 +7,7 @@ public class Player {
     private static ArrayList<MilitaryUnit> units = new ArrayList();
     public Player(){
         units = new ArrayList();
+        units.add(MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.BASE));
     }
     public void addUnit(MilitaryUnit unit){
         units.add(unit);
@@ -19,5 +20,11 @@ public class Player {
         for(MilitaryUnit unit : units)
             if(unit.getImg().equals(img)) return true;
         return false;
+    }
+    public static void remove(MilitaryUnit unit){
+        units.remove(unit);
+    }
+    public static MilitaryUnit getBase(){
+        return units.get(0);
     }
 }
