@@ -6,18 +6,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.Alert;
 import javafx.scene.image.ImageView;
 
 public class Enemy extends Task{
     private static ArrayList<MilitaryUnit> units = new ArrayList();
+    private static GameManager manager = new GameManager();
     public Enemy(){
         units = new ArrayList();
         units.add(MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.BASE));
+        setOnSucceeded(value -> {
+            manager.showEndGameAlerts();
+        });
     }
     protected Void call(){
         Random rand = new Random();
-        for(int i = 0; i < 10; i++){
-            if(WarGameFXMLController.getController().getBattlefieldPane() == null) cancel();
+        do{
             Platform.runLater(() -> {
                 MilitaryUnit u = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.SOLDIER);
                 WarGameFXMLController.getController().getBattlefieldPane().getChildren().add(u.getImg());
@@ -26,12 +30,13 @@ public class Enemy extends Task{
                 u.getImg().setLayoutY(randPosition());
                 new Thread(u).start();
             });
-        try{
-            Thread.sleep(rand.nextInt(15001) + 5000); // zakładam że komputer będzie wysyłał jednostki z odstępami czasowymi od 5000 do 20000 milisekund
-        }catch(InterruptedException e){
-                Logger.getLogger(WarGameFXMLController.class.getName()).log(Level.SEVERE, null, e);
+            try{
+                if(!manager.getGameover())
+                    Thread.sleep(rand.nextInt(15001) + 5000); // zakładam że komputer będzie wysyłał jednostki z odstępami czasowymi od 5000 do 20000 milisekund
+            }catch(InterruptedException e){
+                    Logger.getLogger(WarGameFXMLController.class.getName()).log(Level.SEVERE, null, e);
             }
-        }
+        }while(!manager.getGameover());
         return null;
     }
     public static MilitaryUnit getUnit(ImageView img){
@@ -46,7 +51,8 @@ public class Enemy extends Task{
         return units.size();
     }
     public static MilitaryUnit getBase(){
-        return units.get(0);
+        if(size() > 0 && units.get(0) instanceof Base) return units.get(0);
+        return null;
     }
     public static ArrayList<MilitaryUnit> getUnits(){
         return units;
