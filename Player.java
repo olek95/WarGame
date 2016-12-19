@@ -25,6 +25,7 @@ public class Player {
         units.remove(unit);
     }
     public static MilitaryUnit getBase(){
-        return units.get(0);
+        if(units.size() > 0 && units.get(0) instanceof Base)  return units.get(0);
+        return null;
     }
 }
