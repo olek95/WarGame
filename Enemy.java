@@ -21,9 +21,10 @@ public class Enemy extends Task{
     }
     protected Void call(){
         Random rand = new Random();
+        MilitaryUnitType[] types = MilitaryUnitType.values();
         do{
             Platform.runLater(() -> {
-                MilitaryUnit u = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.SOLDIER);
+                MilitaryUnit u = MilitaryUnitFactory.createMilitaryUnit(types[rand.nextInt(3)]); // losuje rodzaj jednostki, bez możliwości wylosowania bazy
                 WarGameFXMLController.getController().getBattlefieldPane().getChildren().add(u.getImg());
                 units.add(u);
                 u.getImg().setLayoutX(WarGameFXMLController.getBattlefieldWidth()  - u.getImg().getImage().getWidth());
@@ -73,3 +74,4 @@ public class Enemy extends Task{
         }while(i < 0);
     }
 }
+
