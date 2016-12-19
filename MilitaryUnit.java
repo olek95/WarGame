@@ -22,7 +22,6 @@ public abstract class MilitaryUnit extends Task{
     private GameManager manager = new GameManager();
     protected MilitaryUnitType type;
     public Void call(){
-        System.out.println(Player.getUnits().size());
         if(Player.getUnits().contains(this)) isPlayerUnit = true;
         do{
             try {
@@ -33,13 +32,15 @@ public abstract class MilitaryUnit extends Task{
                     else img.setLayoutX(img.getLayoutX() - speed);
                 }
                 ImageView neighbour;
+                for(Node n : WarGameFXMLController.getController().getBattlefieldPane().getChildren())
+                    System.out.print(((ImageView)n).getImage() + " ");
+                System.out.println();
                 synchronized(this){
                     do{
                         wait(100);
                         neighbour = stop();
                         //for(Node n : WarGameFXMLController.getController().getBattlefieldPane().getChildren()) System.out.print(((ImageView)n).getImage() + " ");
                         //System.out.println(isPlayerUnit + " " + img.getImage() + " " + neighbour + " " + life);
-                        System.out.println(WarGameFXMLController.getController().getBattlefieldPane().getChildren().size());
                         if(isPlayerUnit && neighbour != null && !Player.hasImageView(neighbour)){
                             wait(200);
                             attack(neighbour);
@@ -49,7 +50,6 @@ public abstract class MilitaryUnit extends Task{
                                 attack(null);
                             }
                         }
-                        System.out.println("ZAKLINOWALEM SIEEEE");
                     }while(neighbour != null && !manager.getGameover());
                 }
             }catch(InterruptedException e){
@@ -85,6 +85,7 @@ public abstract class MilitaryUnit extends Task{
             if(isPlayerUnit) enemy = Enemy.getBase();
             else enemy = Player.getBase();
         }
+        //System.out.println("ATAKUJE");
         updateBattleResult(battleTextArea, t[0], t[1], enemy);
         Random rand = new Random(); 
         if(isPlayerUnit)
@@ -94,26 +95,17 @@ public abstract class MilitaryUnit extends Task{
                 if(life <= 0){
                     destroy(this);
                     Player.remove(this);
-                    System.out.println("ZNISZCZONY");
                 }
             }
         if(life > 0 && rand.nextInt(2) == 0){
             enemy.life -= attack;
             updateBattleResult(battleTextArea, t[0], t[1], enemy);
             if(enemy.life <= 0){
-                if(!isPlayerUnit) manager.changePoints(enemy.initialLife);
+                if(isPlayerUnit) manager.changePoints(enemy.initialLife);
                 destroy(enemy);
                 if(isPlayerUnit) Enemy.remove(enemy);
                 else Player.remove(enemy);
-                if(neighbour == null){
-                    manager.setGameover(true);
-                   // Enemy.destroyAll();
-                    //Player.destroyAll();
-                    //System.out.println("WSZEDLEM :)");
-                    //WarGameFXMLController.getController().getMiddlePane().getChildren().remove(WarGameFXMLController.getController().getBattlefieldPane());
-                   //WarGameFXMLController.getController().set();
-                   //System.out.println(WarGameFXMLController.getController().getBattlefieldPane());
-                }
+                if(neighbour == null) manager.setGameover(true);
                 enemy = null;
                 neighbour = null;
             }
@@ -145,4 +137,3 @@ public abstract class MilitaryUnit extends Task{
         return splittedTextArea;
     }
 }
-
