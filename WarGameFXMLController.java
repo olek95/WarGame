@@ -35,10 +35,37 @@ public class WarGameFXMLController implements Initializable {
         if(p != null) battlefieldPane.getChildren().clear(); // jeśli gracz nie jest nullem to gra się 2 raz, więc czyszczę planszę
         p = new Player();
         e = new Enemy();
+        manager.setInitialValues();
         manager.setGameover(false);
+        manager.increaseCash();
+        t = new Thread(e);
+        t.start();
+    }
+    @Override
+    @FXML
+    public void initialize(URL url, ResourceBundle rb) {
+        controller = this;
+        manager = new GameManager();
+        manager.setGameover(true);
+        BATTLEFIELD_WIDTH = battlefieldPane.getPrefWidth();
+        MARGIN = 165;
         buySoldierButton.setOnAction(value -> {
-            unit = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.SOLDIER);
-            if(!manager.changeCash(unit.price)) unit = null;
+            if(!manager.getGameover()){
+                unit = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.SOLDIER);
+                if(!manager.changeCash(unit.price)) unit = null;
+            }
+        });
+        buyTankButton.setOnAction(value -> {
+            if(!manager.getGameover()){
+                unit = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.TANK);
+                if(!manager.changeCash(unit.price)) unit = null;
+            }
+        });
+        buyHelicopterButton.setOnAction(value -> {
+            if(!manager.getGameover()){
+                unit = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.HELICOPTER);
+                if(!manager.changeCash(unit.price)) unit = null;
+            }
         });
         battlefieldPane.setOnMouseClicked(click -> {
             if(unit != null){
@@ -49,34 +76,6 @@ public class WarGameFXMLController implements Initializable {
                 unit = null;
             }
         });
-        t = new Thread(e);
-        t.start();
-    }
-    @Override
-    @FXML
-    public void initialize(URL url, ResourceBundle rb) {
-        controller = this;
-        manager = new GameManager();
-        manager.setInitialValues();
-        BATTLEFIELD_WIDTH = battlefieldPane.getPrefWidth();
-        MARGIN = 165;
-       /*MilitaryUnit u = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.SOLDIER);
-       battlefieldPane.getChildren().add(u.getImg());
-       e.addUnit(u);
-        u.getImg().setLayoutX(BATTLEFIELD_WIDTH - u.getImg().getImage().getWidth());
-        u.getImg().setLayoutY(0);
-        new Thread(u).start();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(WarGameFXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-          MilitaryUnit u2 = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.SOLDIER);
-        u2.getImg().setLayoutX(BATTLEFIELD_WIDTH - u2.getImg().getImage().getWidth());
-        u2.getImg().setLayoutY(97);
-         battlefieldPane.getChildren().add(u2.getImg());
-         e.addUnit(u2);
-         new Thread(u2).start();*/
         exitButton.setOnAction(value -> {
             System.exit(0);
         });
@@ -112,3 +111,4 @@ public class WarGameFXMLController implements Initializable {
         battlefieldPane = null;
     }
 }
+
