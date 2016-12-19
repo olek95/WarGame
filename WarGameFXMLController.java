@@ -5,6 +5,8 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -19,34 +21,21 @@ public class WarGameFXMLController implements Initializable {
     private Player p;
     private Enemy e;
     private GameManager manager;
-    private Pane battlefieldPane;
+    Thread t;
     @FXML
     private Button buySoldierButton, buyTankButton, buyHelicopterButton, exitButton;
-    //@FXML
-    //private Pane battlefieldPane;
     @FXML
-    private Pane middlePane;
+    private Pane battlefieldPane;
     @FXML
     private TextArea battleTextArea;
     @FXML
     private TextField cashTextField, pointsTextField;
     @FXML
     private void play(ActionEvent event){
-        if(p != null) {
-            middlePane = new Pane();
-            battlefieldPane = null;
-        }
+        if(p != null) battlefieldPane.getChildren().clear(); // jeśli gracz nie jest nullem to gra się 2 raz, więc czyszczę planszę
         p = new Player();
         e = new Enemy();
-        if(battlefieldPane == null){
-            battlefieldPane = new Pane(); 
-            battlefieldPane.setLayoutX(112);
-            battlefieldPane.setPrefHeight(372);
-            battlefieldPane.setPrefWidth(774);
-            System.out.println("Rozmiar1 " + middlePane.getChildren().size());
-            middlePane.getChildren().add(battlefieldPane);
-            System.out.println("Rozmiar2 " + middlePane.getChildren().size());
-        }
+        manager.setGameover(false);
         buySoldierButton.setOnAction(value -> {
             unit = MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.SOLDIER);
             if(!manager.changeCash(unit.price)) unit = null;
@@ -60,17 +49,13 @@ public class WarGameFXMLController implements Initializable {
                 unit = null;
             }
         });
-        new Thread(e).start();
+        t = new Thread(e);
+        t.start();
     }
     @Override
     @FXML
     public void initialize(URL url, ResourceBundle rb) {
         controller = this;
-        battlefieldPane = new Pane();
-        battlefieldPane.setLayoutX(112);
-        battlefieldPane.setPrefHeight(372);
-        battlefieldPane.setPrefWidth(774);
-        middlePane.getChildren().add(battlefieldPane);
         manager = new GameManager();
         manager.setInitialValues();
         BATTLEFIELD_WIDTH = battlefieldPane.getPrefWidth();
@@ -125,8 +110,5 @@ public class WarGameFXMLController implements Initializable {
     }
     public void set(){
         battlefieldPane = null;
-    }
-    public Pane getMiddlePane(){
-        return middlePane;
     }
 }
