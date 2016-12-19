@@ -1,5 +1,7 @@
 package wargame;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -17,6 +19,7 @@ public class GameManager {
         WarGameFXMLController controller = WarGameFXMLController.getController();
         controller.getCashTextField().setText("20");
         controller.getPointsTextField().setText("0");
+        controller.getBattleTextArea().setText("1.\n2.\n3.\n4.\n");
     }
     public boolean changeCash(int price){
         TextField cashTextField = WarGameFXMLController.getController().getCashTextField();
@@ -37,6 +40,23 @@ public class GameManager {
         else endGameAlert.setHeaderText("PRZEGRAŁEŚ!!");
         endGameAlert.setContentText("Czy chcesz zapisać wynik?");
         endGameAlert.showAndWait();
+    }
+    public void increaseCash(){
+        new Thread(() -> {
+            do{
+                try{
+                    synchronized(this){
+                        wait(20000);
+                    }
+                }catch(InterruptedException e){
+                    Logger.getLogger(GameManager.class.getName()).log(Level.SEVERE, null, e);
+                }
+                if(!gameover){
+                    TextField cashTextField = WarGameFXMLController.getController().getCashTextField();
+                    cashTextField.setText(((Integer.parseInt(cashTextField.getText())) + 5) + "");
+                }
+            }while(!gameover);
+        }).start();
     }
     public void setGameover(boolean value){
         gameover = value;
