@@ -9,6 +9,7 @@ import javafx.concurrent.Task;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -55,10 +56,6 @@ public abstract class MilitaryUnit extends Task{
                 Logger.getLogger(MilitaryUnit.class.getName()).log(Level.SEVERE, null, e);
             }
         }while(life > 0 && !manager.getGameover());
-        if(isPlayerUnit) Player.remove(this);
-        else Enemy.remove(this);
-        destroy(this);
-        manager.check();
         return null;
     }
     public ImageView getImg(){
@@ -148,3 +145,4 @@ public abstract class MilitaryUnit extends Task{
         return splittedTextArea;
     }
 }
+
