@@ -5,6 +5,7 @@ import javafx.scene.image.ImageView;
 
 public class Player {
     private static ArrayList<MilitaryUnit> units = new ArrayList();
+    private static String login;
     public Player(){
         units = new ArrayList();
         units.add(MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.BASE));
@@ -27,5 +28,11 @@ public class Player {
     public static MilitaryUnit getBase(){
         if(units.size() > 0 && units.get(0) instanceof Base)  return units.get(0);
         return null;
+    }
+    public static void setLogin(String login){
+        Player.login = login;
+    }
+    public static String getLogin(){
+        return login;
     }
 }
