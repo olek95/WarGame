@@ -13,7 +13,7 @@ public class WarGame extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("WarGameFXML.fxml"));
         
         Scene scene = new Scene(root);
-        
+        stage.setTitle("WarGame");
         stage.setScene(scene);
         stage.show();
     }
