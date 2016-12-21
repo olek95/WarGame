@@ -4,24 +4,33 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
 
+/**
+ * Obiekt klasy <code>MilitaryUnit</code> reprezentuje jednostkę wojskową. 
+ * Każda jednostka składa się z obrazka ją reprezentującego oraz z wartości 
+ * siły ataku, życia, prędkości oraz kosztu jednostki.
+ * @author AleksanderSklorz
+ */
 public abstract class MilitaryUnit extends Task{
     protected ImageView img;
     protected int attack, life, initialLife, speed, price;
     private boolean isPlayerUnit, arrived;
-    private GameManager manager = new GameManager();
+    private GameManager manager = GameManager.createGameManager();
     protected MilitaryUnitType type;
-    public Void call(){
+    /**
+     * Wywołuje zadanie obsługujące poruszanie się danej jednostki na polu bitwy. 
+     * Porusza jednostkę od jednej strony na stronę przeciwną, aż do końca przeciwnej 
+     * strony, jednakże bez marginesu (czyli miejsca przy bazie gdzie rodzą się
+     * jednostki przeciwnika). Podejmuje też decyzję o zaatakowaniu przeciwnika. 
+     * @return 
+     */
+    protected Void call(){
         if(Player.getUnits().contains(this)) isPlayerUnit = true;
         do{
             try {
@@ -58,10 +67,14 @@ public abstract class MilitaryUnit extends Task{
         }while(life > 0 && !manager.getGameover());
         return null;
     }
+    /**
+     * Zwraca komponent przechowujący obraz jednostki. 
+     * @return komponent z obrazem jednostki
+     */
     public ImageView getImg(){
         return img;
     }
-    public ImageView stop(){
+    private ImageView stop(){
         for(Node n : WarGameFXMLController.getController().getBattlefieldPane().getChildren()){
             if(!img.equals((ImageView)n) && img.getLayoutY() == n.getLayoutY()){
                 Bounds b = n.getBoundsInParent();
@@ -75,24 +88,20 @@ public abstract class MilitaryUnit extends Task{
         }
         return null;
     }
-    public void attack(ImageView neighbour){
+    private void attack(ImageView neighbour){
         int row = findRow();
         TextArea battleTextArea = WarGameFXMLController.getController().getBattleTextArea();
-        //String[] t = splitBattleTextArea(battleTextArea, row);
-        //System.out.println(t[1] + "|" + t[2]);
         MilitaryUnit enemy;
         if(neighbour != null) enemy = Enemy.getUnit(neighbour);
         else{
             if(isPlayerUnit) enemy = Enemy.getBase();
             else enemy = Player.getBase();
         }
-        //System.out.println("ATAKUJE");
         updateBattleResult(battleTextArea, enemy, row);
         Random rand = new Random(); 
         if(isPlayerUnit)
             if(rand.nextInt(2) == 0){
                 life -= enemy.attack; 
-                //battleTextArea.textProperty().set(t[0] + type.name() + "-" + enemy.type.name() + " " + life + "-" + enemy.life + t[1]);
                 replace(battleTextArea, row, type.name() + "-" + enemy.type.name() + " " + life + "-" + enemy.life);
                 if(life <= 0){
                     destroy(this);
@@ -113,20 +122,19 @@ public abstract class MilitaryUnit extends Task{
             }
         }
     }
-    public static void destroy(MilitaryUnit unit){
+    private static void destroy(MilitaryUnit unit){
         unit.img.setImage(null);
         unit.img = null;
         unit = null;
     }
-    //private void updateBattleResult(TextArea battleTextArea, String t1, String t2, MilitaryUnit enemy){
     private void updateBattleResult(TextArea battleTextArea, MilitaryUnit enemy, int row){
-        //if(isPlayerUnit) battleTextArea.textProperty().set(t1 + type.name() + "-" + enemy.type.name() + " " + life + "-" + enemy.life + t2);
-        //else battleTextArea.textProperty().set(t1 + enemy.type.name() + "-" + type.name() + " " + enemy.life + "-" + life + t2);
         if(isPlayerUnit) replace(battleTextArea, row, type.name() + "-" + enemy.type.name() + " " + life + "-" + enemy.life);
         else replace(battleTextArea, row, enemy.type.name() + "-" + type.name() + " " + enemy.life + "-" + life);
     }
     private void replace(TextArea battleTextArea, int row, String result){
         battleTextArea.setText(battleTextArea.getText().replaceAll(row + "\\..*\\n", row + "." + result + "\n"));
+        /* zamienia stringa zawierającego wyrażenie regularne składające się z: 
+        nr wiersza, następnie kropki, potem dowolnego ciągu znaku aż do skoku do nowego wiersza*/
     }
     private int findRow(){
         double y = img.getLayoutY();
@@ -135,14 +143,5 @@ public abstract class MilitaryUnit extends Task{
         if(y == 194) return 3;
         return 4;
     }
-    /*private String[] splitBattleTextArea(TextArea battleTextArea, int row){
-        String text = battleTextArea.getText();
-        int i = text.indexOf(row + "");
-        String t1 = text.substring(0, i + 2); // +2 bo chcę objąć nr wiersza wraz z kropką za nim
-        System.out.println(t1);
-        String t2 = text.substring(i);
-        t2 = t2.substring(t2.indexOf("\n"));
-        String[] splittedTextArea = {t1, t2};
-        return splittedTextArea;
-    }*/
 }
+
