@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -18,8 +17,6 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
 /**
@@ -51,27 +48,18 @@ public class WarGameFXMLController implements Initializable {
     private TextField loginTextField, cashTextField, pointsTextField;
     @FXML
     private void play(ActionEvent event){
-        boolean yes = false;
-        if(p != null) battlefieldPane.getChildren().clear(); // jeśli gracz nie jest nullem to gra się 2 raz, więc czyszczę planszę
-        p = new Player();
-        if(Player.getLogin().equals("Anonim")){
-            Alert anonymAlert = new Alert(AlertType.WARNING, "Czy chcesz grać jako anonim?", ButtonType.YES, ButtonType.NO);
-            anonymAlert.setTitle("Anonim");
-            Optional<ButtonType> result = anonymAlert.showAndWait();
-            yes = result.get().equals(ButtonType.YES);
-            if(yes){
-                loginTextField.setText("Anonim");
-            }
-        }else yes = true;
-        if(yes){
-            setGameInterfaceState(true);
-            e = new Enemy();
-            manager.setInitialValues();
-            manager.setGameover(false);
-            manager.increaseCash();
-            t = new Thread(e);
-            t.start();
-        }
+        if(!manager.getGameover()){
+            Alert gameIsRunningAlert = new Alert(AlertType.WARNING, "Aktualnie grasz w grę. Czy chcesz rozpocząć nową grę?", ButtonType.OK, ButtonType.CANCEL);
+            gameIsRunningAlert.setTitle("Gra działa");
+            gameIsRunningAlert.showAndWait().ifPresent(type -> {
+                if(type.equals(ButtonType.OK)){
+                    manager.setGameover(true);
+                    manager.setInterruptedGame(true);
+                    setGameInterfaceState(false);
+                    prepareNewGame();
+                }
+            });
+        }else prepareNewGame();
     }
     @FXML
     private void signIn(ActionEvent event){
@@ -125,7 +113,7 @@ public class WarGameFXMLController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         controller = this;
         setGameInterfaceState(false);
-        manager = new GameManager();
+        manager = GameManager.createGameManager();
         createTextAreaDialog();
         try{
             dbManager = DatabaseManager.createDatabaseManager("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/wargame?dontTrackOpenResources=true",
@@ -275,5 +263,29 @@ public class WarGameFXMLController implements Initializable {
         buySoldierButton.setDisable(true);
         buyTankButton.setDisable(true);
         b.setText("Kup+");
+    }
+    private void prepareNewGame(){
+        boolean yes = false;
+        if(p != null) battlefieldPane.getChildren().clear(); // jeśli gracz nie jest nullem to gra się 2 raz, więc czyszczę planszę
+        p = new Player();
+        if(Player.getLogin().equals("Anonim")){
+            Alert anonymAlert = new Alert(AlertType.WARNING, "Czy chcesz grać jako anonim?", ButtonType.YES, ButtonType.NO);
+            anonymAlert.setTitle("Anonim");
+            Optional<ButtonType> result = anonymAlert.showAndWait();
+            yes = result.get().equals(ButtonType.YES);
+            if(yes){
+                loginTextField.setText("Anonim");
+            }
+        }else yes = true;
+        if(yes){
+            e = new Enemy();
+            setGameInterfaceState(true);
+            manager.setInitialValues();
+            manager.setGameover(false);
+            manager.setInterruptedGame(false);
+            manager.increaseCash();
+            t = new Thread(e);
+            t.start();
+        }
     }
 }
