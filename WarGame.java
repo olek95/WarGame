@@ -14,6 +14,7 @@ public class WarGame extends Application {
         
         Scene scene = new Scene(root);
         stage.setTitle("WarGame");
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }
