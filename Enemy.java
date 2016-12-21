@@ -23,8 +23,8 @@ public class Enemy extends Task{
         units.add(MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.BASE));
         setOnSucceeded(value -> {
             if(!manager.getInterruptedGame()) manager.showEndGameAlerts();
-            WarGameFXMLController.setGameInterfaceState(false);
             WarGameFXMLController.unblockPurchase();
+            WarGameFXMLController.setGameInterfaceState(false);
         });
     }
     /**
