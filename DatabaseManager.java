@@ -99,5 +99,38 @@ public class DatabaseManager {
             Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, e);
         }
     }
+    /**
+     * Zwraca ilość pieniędzy zapisaną w bazie danych dla danego użytkownika. 
+     * @param login login użytkownika 
+     * @return ilość pieniędzy w bazie danych 
+     */
+    public static String getCash(String login){
+        try(PreparedStatement stat = conn.prepareStatement("SELECT cash FROM Statistics WHERE login = ?")){
+            stat.setString(1, login);
+            ResultSet rs = stat.executeQuery(); 
+            rs.next(); 
+            return rs.getString(1);
+        }catch(SQLException e){
+            Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return null;
+    }
+    /**
+     * Zwraca ilość punktów zapisaną w bazie danych dla danego użytkownika. 
+     * @param login login użytkownika 
+     * @return ilość punktów w bazie danych 
+     */
+    public static String getPoints(String login){
+        try(PreparedStatement stat = conn.prepareStatement("SELECT points FROM Statistics WHERE login = ?")){
+            stat.setString(1, login);
+            ResultSet rs = stat.executeQuery(); 
+            rs.next(); 
+            return rs.getString(1);
+        }catch(SQLException e){
+            Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return null;
+    }
 }
+
 
