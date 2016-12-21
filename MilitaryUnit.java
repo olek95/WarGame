@@ -32,9 +32,9 @@ public abstract class MilitaryUnit extends Task{
                     else img.setLayoutX(img.getLayoutX() - speed);
                 }
                 ImageView neighbour;
-                for(Node n : WarGameFXMLController.getController().getBattlefieldPane().getChildren())
-                    System.out.print(((ImageView)n).getImage() + " ");
-                System.out.println();
+                //for(Node n : WarGameFXMLController.getController().getBattlefieldPane().getChildren())
+                  //  System.out.print(((ImageView)n).getImage() + " ");
+                //System.out.println();
                 synchronized(this){
                     do{
                         wait(100);
@@ -78,7 +78,8 @@ public abstract class MilitaryUnit extends Task{
     public void attack(ImageView neighbour){
         int row = findRow();
         TextArea battleTextArea = WarGameFXMLController.getController().getBattleTextArea();
-        String[] t = splitBattleTextArea(battleTextArea, row);
+        //String[] t = splitBattleTextArea(battleTextArea, row);
+        //System.out.println(t[1] + "|" + t[2]);
         MilitaryUnit enemy;
         if(neighbour != null) enemy = Enemy.getUnit(neighbour);
         else{
@@ -86,12 +87,13 @@ public abstract class MilitaryUnit extends Task{
             else enemy = Player.getBase();
         }
         //System.out.println("ATAKUJE");
-        updateBattleResult(battleTextArea, t[0], t[1], enemy);
+        updateBattleResult(battleTextArea, enemy, row);
         Random rand = new Random(); 
         if(isPlayerUnit)
             if(rand.nextInt(2) == 0){
                 life -= enemy.attack; 
-                battleTextArea.textProperty().set(t[0] + type.name() + "-" + enemy.type.name() + " " + life + "-" + enemy.life + t[1]);
+                //battleTextArea.textProperty().set(t[0] + type.name() + "-" + enemy.type.name() + " " + life + "-" + enemy.life + t[1]);
+                replace(battleTextArea, row, type.name() + "-" + enemy.type.name() + " " + life + "-" + enemy.life);
                 if(life <= 0){
                     destroy(this);
                     Player.remove(this);
@@ -99,7 +101,7 @@ public abstract class MilitaryUnit extends Task{
             }
         if(life > 0 && rand.nextInt(2) == 0){
             enemy.life -= attack;
-            updateBattleResult(battleTextArea, t[0], t[1], enemy);
+            updateBattleResult(battleTextArea, enemy, row);
             if(enemy.life <= 0){
                 if(isPlayerUnit) manager.changePoints(enemy.initialLife);
                 destroy(enemy);
@@ -116,9 +118,15 @@ public abstract class MilitaryUnit extends Task{
         unit.img = null;
         unit = null;
     }
-    private void updateBattleResult(TextArea battleTextArea, String t1, String t2, MilitaryUnit enemy){
-        if(isPlayerUnit) battleTextArea.textProperty().set(t1 + type.name() + "-" + enemy.type.name() + " " + life + "-" + enemy.life + t2);
-        else battleTextArea.textProperty().set(t1 + enemy.type.name() + "-" + type.name() + " " + enemy.life + "-" + life + t2);
+    //private void updateBattleResult(TextArea battleTextArea, String t1, String t2, MilitaryUnit enemy){
+    private void updateBattleResult(TextArea battleTextArea, MilitaryUnit enemy, int row){
+        //if(isPlayerUnit) battleTextArea.textProperty().set(t1 + type.name() + "-" + enemy.type.name() + " " + life + "-" + enemy.life + t2);
+        //else battleTextArea.textProperty().set(t1 + enemy.type.name() + "-" + type.name() + " " + enemy.life + "-" + life + t2);
+        if(isPlayerUnit) replace(battleTextArea, row, type.name() + "-" + enemy.type.name() + " " + life + "-" + enemy.life);
+        else replace(battleTextArea, row, enemy.type.name() + "-" + type.name() + " " + enemy.life + "-" + life);
+    }
+    private void replace(TextArea battleTextArea, int row, String result){
+        battleTextArea.setText(battleTextArea.getText().replaceAll(row + "\\..*\\n", row + "." + result + "\n"));
     }
     private int findRow(){
         double y = img.getLayoutY();
@@ -127,13 +135,14 @@ public abstract class MilitaryUnit extends Task{
         if(y == 194) return 3;
         return 4;
     }
-    private String[] splitBattleTextArea(TextArea battleTextArea, int row){
+    /*private String[] splitBattleTextArea(TextArea battleTextArea, int row){
         String text = battleTextArea.getText();
         int i = text.indexOf(row + "");
         String t1 = text.substring(0, i + 2); // +2 bo chcę objąć nr wiersza wraz z kropką za nim
+        System.out.println(t1);
         String t2 = text.substring(i);
         t2 = t2.substring(t2.indexOf("\n"));
         String[] splittedTextArea = {t1, t2};
         return splittedTextArea;
-    }
+    }*/
 }
