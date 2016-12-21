@@ -116,8 +116,7 @@ public class WarGameFXMLController implements Initializable {
         manager = GameManager.createGameManager();
         createTextAreaDialog();
         try{
-            dbManager = DatabaseManager.createDatabaseManager("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/wargame?dontTrackOpenResources=true",
-                    "olek", "haslo12345");
+            dbManager = DatabaseManager.createDatabaseManager("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/wargame?dontTrackOpenResources=true");
         }catch (ClassNotFoundException | SQLException e){
             Logger.getLogger(WarGameFXMLController.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -289,3 +288,4 @@ public class WarGameFXMLController implements Initializable {
         }
     }
 }
+
