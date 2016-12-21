@@ -17,20 +17,24 @@ public class Enemy extends Task{
         units.add(MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.BASE));
         setOnSucceeded(value -> {
             manager.showEndGameAlerts();
+            WarGameFXMLController.setGameInterfaceState(false);
+            WarGameFXMLController.unblockPurchase();
         });
     }
     protected Void call(){
         Random rand = new Random();
         MilitaryUnitType[] types = MilitaryUnitType.values();
         do{
-            Platform.runLater(() -> {
-                MilitaryUnit u = MilitaryUnitFactory.createMilitaryUnit(types[rand.nextInt(3)]); // losuje rodzaj jednostki, bez możliwości wylosowania bazy
-                WarGameFXMLController.getController().getBattlefieldPane().getChildren().add(u.getImg());
-                units.add(u);
-                u.getImg().setLayoutX(WarGameFXMLController.getBattlefieldWidth()  - u.getImg().getImage().getWidth());
-                u.getImg().setLayoutY(randPosition());
-                new Thread(u).start();
-            });
+            if(!manager.getGameover()){
+                Platform.runLater(() -> {
+                    MilitaryUnit u = MilitaryUnitFactory.createMilitaryUnit(types[rand.nextInt(3)]); // losuje rodzaj jednostki, bez możliwości wylosowania bazy
+                    WarGameFXMLController.getController().getBattlefieldPane().getChildren().add(u.getImg());
+                    units.add(u);
+                    u.getImg().setLayoutX(WarGameFXMLController.getBattlefieldWidth()  - u.getImg().getImage().getWidth());
+                    u.getImg().setLayoutY(randPosition());
+                    new Thread(u).start();
+                });
+            }
             try{
                 if(!manager.getGameover())
                     Thread.sleep(rand.nextInt(15001) + 5000); // zakładam że komputer będzie wysyłał jednostki z odstępami czasowymi od 5000 do 20000 milisekund
