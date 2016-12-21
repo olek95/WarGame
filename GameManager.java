@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 
@@ -36,10 +37,15 @@ public class GameManager {
     }
     public void showEndGameAlerts(){
         Alert endGameAlert = new Alert(AlertType.CONFIRMATION);
+        endGameAlert.setTitle("Koniec gry");
         if(Player.getBase() != null) endGameAlert.setHeaderText("WYGRAŁEŚ!!");
         else endGameAlert.setHeaderText("PRZEGRAŁEŚ!!");
-        endGameAlert.setContentText("Czy chcesz zapisać wynik?");
-        endGameAlert.showAndWait();
+        if(!Player.getLogin().toLowerCase().equals("anonim")){
+            endGameAlert.setContentText("Czy chcesz zapisać wynik?");
+            endGameAlert.showAndWait().ifPresent(option -> {
+                if(option.equals(ButtonType.OK)) DatabaseManager.saveScore();
+            });
+        }else endGameAlert.showAndWait();
     }
     public void increaseCash(){
         new Thread(() -> {
