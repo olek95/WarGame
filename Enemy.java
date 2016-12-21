@@ -6,21 +6,34 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.scene.control.Alert;
 import javafx.scene.image.ImageView;
 
+/**
+ * Obiekt klasy <code>Enemy</code> reprezentuje przeciwnika. Dodatkowo 
+ * przyjąłem że w momencie gry kończy się jego wątek - wyświetlane zostają
+ * informacje np. o koncu gry, ponieważ obojętnie czy wygra czy przegra, 
+ * jego wątek będzie zakończony. 
+ * @author AleksanderSklorz
+ */
 public class Enemy extends Task{
     private static ArrayList<MilitaryUnit> units = new ArrayList();
-    private static GameManager manager = new GameManager();
+    private static GameManager manager = GameManager.createGameManager();
     public Enemy(){
         units = new ArrayList();
         units.add(MilitaryUnitFactory.createMilitaryUnit(MilitaryUnitType.BASE));
         setOnSucceeded(value -> {
-            manager.showEndGameAlerts();
+            if(!manager.getInterruptedGame()) manager.showEndGameAlerts();
             WarGameFXMLController.setGameInterfaceState(false);
             WarGameFXMLController.unblockPurchase();
         });
     }
+    /**
+     * Wywołuje zadanie obsługujące decyzje podjęte przez przeciwnika. W zadaniu tym
+     * przeciwnik losuje którą jednostkę chce umieścić i na jakiej pozycji. 
+     * Decyzje przeciwnika są podejmowanie w losowym czasie z przedziału od 5 do
+     * 20 sekund. Zadanie się kończy w momencie końca gry. 
+     * @return null
+     */
     protected Void call(){
         Random rand = new Random();
         MilitaryUnitType[] types = MilitaryUnitType.values();
@@ -44,38 +57,34 @@ public class Enemy extends Task{
         }while(!manager.getGameover());
         return null;
     }
+    /**
+     * Zwraca wrogą jednostkę na podstawie komponentu przechowującego obraz. 
+     * @param img komponent zawierający obraz przedstawiajacy jednostkę
+     * @return wrogą jednostkę 
+     */
     public static MilitaryUnit getUnit(ImageView img){
         for(MilitaryUnit unit : units)
             if(unit.getImg().equals(img)) return unit; 
         return null;
     }
+    /**
+     * Usuwa wrogą jednostkę z listy jednostek. 
+     * @param unit jednostka do usunięcia
+     */
     public static void remove(MilitaryUnit unit){
         units.remove(unit);
     }
-    public static int size(){
-        return units.size();
-    }
+    /**
+     * Zwraca wrogą bazę. Jeśli baza została zniszczona, zwraca null. 
+     * @return wrogą bazę lub jeśli zniszczona - null
+     */
     public static MilitaryUnit getBase(){
-        if(size() > 0 && units.get(0) instanceof Base) return units.get(0);
+        if(units.size() > 0 && units.get(0) instanceof Base) return units.get(0);
         return null;
-    }
-    public static ArrayList<MilitaryUnit> getUnits(){
-        return units;
     }
     private static int randPosition(){
         Random rand = new Random();
         int[] positions = {0, 97, 194, 291};
         return positions[rand.nextInt(4)];
     }
-    public static void destroyAll(){
-        int i = 0;
-        do{
-            MilitaryUnit unit = units.get(i);
-            unit.img.setImage(null);
-        unit.img = null;
-        unit = null;
-        i++;
-        }while(i < 0);
-    }
 }
-
