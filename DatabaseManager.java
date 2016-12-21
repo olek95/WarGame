@@ -6,10 +6,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextInputDialog;
 
 /**
  * Obiekt klacy <code>DatabaseManager</code> reprezentuje zarządcę bazy danych 
@@ -35,8 +37,26 @@ public class DatabaseManager {
      * @throws ClassNotFoundException
      * @throws SQLException 
      */
-    public static synchronized DatabaseManager createDatabaseManager(String jdbcDriver, String url, String user, String password) throws ClassNotFoundException, SQLException{
-        if(manager == null) manager = new DatabaseManager(jdbcDriver, url, user, password); 
+    public static synchronized DatabaseManager createDatabaseManager(String jdbcDriver, String url) throws ClassNotFoundException, SQLException{
+        if(manager == null){
+            TextInputDialog dataAccountDialog = new TextInputDialog();
+            dataAccountDialog.setContentText("Podaj login do bazy danych: ");
+            boolean ok;
+            String login = null;
+            do{
+                Optional<String> result = dataAccountDialog.showAndWait();
+                ok = result.isPresent();
+                if(ok) login = result.get().trim();
+            }while(!ok);
+            dataAccountDialog.setContentText("Podaj haslo do bazy danych: ");
+            String password = null;
+            do{
+                Optional<String> result = dataAccountDialog.showAndWait();
+                ok = result.isPresent();
+                if(ok) password = result.get().trim();
+            }while(!ok);
+            manager = new DatabaseManager(jdbcDriver, url, login, password);
+        } 
         return manager;
     }
     /**
