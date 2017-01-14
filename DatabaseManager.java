@@ -31,8 +31,6 @@ public class DatabaseManager {
      * Tworzy zarządcę bazy danych jeśli nie istnieje. 
      * @param jdbcDriver używany sterownik 
      * @param url adres url do bazy danych 
-     * @param user nazwa użytkownika 
-     * @param password hasło użytkownika 
      * @return zarządcę bazy danych 
      * @throws ClassNotFoundException
      * @throws SQLException 
@@ -152,5 +150,4 @@ public class DatabaseManager {
         return null;
     }
 }
-
 
